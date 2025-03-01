@@ -8,7 +8,7 @@ import Movies from '../movies/index'
 export default function HomeScreen() {
   return (
     <View>
-      <Movies />
+      {/* <Movies /> */}
       {/* <Details/> */}
 
       {/* //  <Onbording />

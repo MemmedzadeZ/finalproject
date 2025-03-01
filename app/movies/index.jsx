@@ -13,7 +13,7 @@ import { router } from "expo-router";
 import TVShows from '../../components/movies/shows/TvShows';
 import TrendingMovies from "../../components/movies/trending/TrendingMovies";
 
-// import fdd from "../details/index"
+
 
 const Movies = () => {
   const [trendingMovies, setTrendingMovies] = useState([]);

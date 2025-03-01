@@ -9,7 +9,7 @@ const Details = () => {
 
         <View>
 
-<Text>Salamm</Text>
+            <Text>Salamm</Text>
             <FlatList
            data={trendingMovies}
            horizontal

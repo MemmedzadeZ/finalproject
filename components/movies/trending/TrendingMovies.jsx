@@ -14,6 +14,7 @@ const TrendingMovies = ({ item, index }) => {
           pathname: "/movies/details/[id]",
           params: { id: item.id, mediaType: item.media_type || "movie", start: "" },
         })
+
       }
     >
       <Image
