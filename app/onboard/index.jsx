@@ -40,7 +40,7 @@ const Board = () => {
 
   const bg = boardIndex === lastIndex ? require("../../assets/images/background-image.png") : null;
 
-  // Gecikməni azaltmaq üçün funksiyanı useCallback ilə bükürük
+  // Function to go to the next board
   const finish = useCallback(() => {
     if (boardIndex < lastIndex) {
       setBoardIndex((prevState) => prevState + 1);
@@ -50,13 +50,21 @@ const Board = () => {
     }
   }, [boardIndex, lastIndex, router]);
 
+  // Automatically change board every 5 seconds
   useEffect(() => {
-    // FlatList-in scrolling zamanı performansı yaxşılaşdırır
-    const timeout = setTimeout(() => {
-      setBoardIndex((prev) => Math.min(prev, lastIndex));
-    }, 100);
-    return () => clearTimeout(timeout);
+    const interval = setInterval(() => {
+      if (boardIndex < lastIndex) {
+        setBoardIndex((prevState) => prevState + 1);
+      } else {
+        clearInterval(interval); // Stop the interval once we've reached the last item
+      }
+    }, 5000); // 5000 milliseconds (5 seconds)
+
+    // Cleanup the interval on unmount
+    return () => clearInterval(interval);
   }, [boardIndex, lastIndex]);
+
+  
 
   return (
     <ImageBackground
@@ -65,6 +73,10 @@ const Board = () => {
       style={{ flex: 1, width: "100%", height: "100%", justifyContent: "center", alignItems: "center" }}
     >
       <View style={tw`flex-row items-center mt-10`}>
+        <Image
+          source={require("../../assets/images/netflixlogo.png")}
+          style={{ width: 150, height: 40, marginRight: -1 }}
+        />
         <Text style={tw`ml-40 mt-22 text-sm text-white`}>Help</Text>
       </View>
 
@@ -74,7 +86,7 @@ const Board = () => {
         showsHorizontalScrollIndicator={false}
         data={data}
         keyExtractor={(item) => item.id.toString()}
-        initialNumToRender={2} // İlk iki elementi render edir, performansı artırır
+        initialNumToRender={2}
         renderItem={({ item }) => (
           <View style={[tw`items-center`, { width }]}>
             <Image source={item.image} resizeMode="contain" style={{ width: width * 0.8, height: height * 0.4 }} />

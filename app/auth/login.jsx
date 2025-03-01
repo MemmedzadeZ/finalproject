@@ -1,4 +1,4 @@
-import { Text, View, Platform, TouchableOpacity } from "react-native";
+import { Text, View, Platform, TouchableOpacity, Image } from "react-native";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import Input from '../../components/input/Input';
 import { useState } from "react";
@@ -10,44 +10,40 @@ const Login = () => {
   const os = Platform.OS;
   const router = useRouter();
 
- const login = async () => {
-  try {
-    const response = await fetch("http://192.168.0.111:5001/api/v1/auth/login", {
-      method: "POST",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-      },
-      body: JSON.stringify(data),
-    });
+  const login = async () => {
+    try {
+      const response = await fetch("http://192.168.0.111:5001/api/v1/auth/login", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+          "Accept": "application/json",
+        },
+        body: JSON.stringify(data),
+      });
 
-    // Log server cavabını yoxlayın
-    const responseData = await response.json();
-    console.log("Server cavabı:", responseData);
-    // console.log("Daxil edilən məlumatlar:", data);
+      const responseData = await response.json();
+      console.log("Server cavabı:", responseData);
 
-
-    if (response.ok) {
-      console.log("Daxil edilən məlumatlar:", data);
-
-      await AsyncStorage.setItem("token", responseData.token); // Tokeni yadda saxla
-      console.log("Token saxlandı:", responseData.token);
-      router.push("/movies");
-    } else {
-  //       const errorData = await response.json(); // Serverdən gələn əlavə məlumatı loglayın
-  // console.error("Daxil olma uğursuz oldu:", errorData.message);
-      console.error("Daxil olma uğursuz oldu:", responseData.message || "Unknown error");
+      if (response.ok) {
+        await AsyncStorage.setItem("token", responseData.token); // Tokeni yadda saxla
+        console.log("Token saxlandı:", responseData.token);
+        router.push("/movies");
+      } else {
+        console.error("Daxil olma uğursuz oldu:", responseData.message || "Unknown error");
+      }
+    } catch (error) {
+      console.error("Xəta:", error);
     }
-  } catch (error) {
-  //     const errorData = await response.json(); // Serverdən gələn əlavə məlumatı loglayın
-  // console.error("Daxil olma uğursuz oldu:", errorData.message);
-    console.error("Xəta:", error);
-  }
-};
-
+  };
 
   return (
     <View style={tw`flex-1 p-5 bg-black`}>
+      {/* Add Image on the top left */}
+      <Image 
+        source={require("../../assets/images/netflixlogo.png")} // Replace with your image path
+      
+      />
+
       <Text style={tw`font-bold text-white text-4xl mt-48`}>
         Sign In
       </Text>

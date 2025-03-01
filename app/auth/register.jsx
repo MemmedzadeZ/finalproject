@@ -1,4 +1,4 @@
-import { Text, View, Platform, TouchableOpacity } from "react-native";
+import { Text, View, Platform, TouchableOpacity,Image } from "react-native";
 import React, { useState } from "react";
 import Input from '../../components/input/Input'
 import { useRouter } from "expo-router";
@@ -36,6 +36,14 @@ const Register = () => {
 
   return (
     <View style={tw`bg-black flex-1 p-5`}>
+
+      <Image 
+              source={require("../../assets/images/netflixlogo.png")} // Replace with your image path
+            
+            />
+      
+
+
       <Text style={tw`font-bold text-white text-4xl mt-48`}>Sign Up</Text>
 
      <Input

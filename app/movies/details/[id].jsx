@@ -1,10 +1,10 @@
-import { Text, View, Dimensions, FlatList, ScrollView, Alert } from "react-native";
+import { Text, View, Dimensions, FlatList, ScrollView, Alert, TouchableOpacity, Image } from "react-native";
 import { useState, useEffect, useCallback } from "react";
-import { useLocalSearchParams } from "expo-router";
+import { useLocalSearchParams, useRouter } from "expo-router"; // UseRouter for navigation
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import YoutubePlayer from "react-native-youtube-iframe";
 import Similar from "../../../components/movies/similars/Similar";
-import tw from "tailwind-react-native-classnames";
+import { StyleSheet } from "react-native"; // Stil üçün StyleSheet import edin
 
 const Details = () => {
   const [data, setData] = useState({});
@@ -14,6 +14,7 @@ const Details = () => {
   const { id, mediaType, start } = useLocalSearchParams();
   const [playing, setPlaying] = useState(false);
   const width = Dimensions.get('window').width - 40;
+  const router = useRouter(); // UseRouter for navigation
 
   const getData = async () => {
     try {
@@ -77,6 +78,10 @@ const Details = () => {
     setPlaying((prev) => !prev);
   }, []);
 
+  const goBack = () => {
+    router.back(); // Go back to the previous page
+  };
+
   useEffect(() => {
     getData();
     getTrailer();
@@ -84,44 +89,105 @@ const Details = () => {
   }, []);
 
   return (
-    <ScrollView style={tw`bg-black h-full w-full py-[40px]`}>
+    <ScrollView style={styles.scrollView}>
+      {/* Back button */}
+      <TouchableOpacity style={styles.backButton} onPress={goBack}>
+        <Image source={require("../../../assets/images/leftarrow.png")} style={styles.backIcon} />
+      </TouchableOpacity>
+
       <YoutubePlayer
         height={225}
         play={start === "start" ? true : playing}
         videoId={trailerKey}
         onChangeState={onStateChange}
       />
-      <Text style={tw`font-robotoRegular text-4xl text-white mt-[20px] ml-[20px]`}>
+      <Text style={styles.title}>
         {mediaType === "movie" ? data.title : data.name}
       </Text>
-      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={tw`flex-row ml-[20px] mr-[20px] mt-[20px]`}>
+      <ScrollView horizontal showsHorizontalScrollIndicator={false} style={styles.genresContainer}>
         {genres.map((item, index) => (
-          <View key={item.id} style={tw`bg-[#27272A] p-[20px] rounded-[4px] ${index !== 0 ? "ml-[20px]" : ""}`}>
-            <Text style={tw`text-white font-inter18ptRegular text-[12px] leading-[24px]`}>
-              {item.name}
-            </Text>
+          <View key={item.id} style={[styles.genre, index !== 0 && styles.genreMargin]}>
+            <Text style={styles.genreText}>{item.name}</Text>
           </View>
         ))}
       </ScrollView>
 
-      <Text style={[tw`mt-[20px] ml-[20px] text-white font-poppinsRegular text-[14px] leading-[24px]`, { width: width }]}>
+      <Text style={[styles.overview, { width: width }]}>
         {data.overview}
       </Text>
 
-      <Text style={tw`ml-[20px] mt-[30px] text-white text-[20px] leading-[32px] font-robotoRegular`}>
-        Similar TV Shows
-      </Text>
+      <Text style={styles.similarText}>Similar TV Shows</Text>
 
-      <FlatList
-        data={similar}
-        horizontal
-        showsHorizontalScrollIndicator={false}
-        contentContainerStyle={tw`ml-[20px] mt-[20px] mb-[50px]`}
-        keyExtractor={item => item.id.toString()}
-        renderItem={({ item, index }) => <Similar item={item} index={index} />}
-      />
+    
     </ScrollView>
   );
 };
+
+const styles = StyleSheet.create({
+  scrollView: {
+    backgroundColor: 'black',
+    height: '100%',
+    width: '100%',
+    paddingTop: 40,
+  },
+  backButton: {
+    position: "absolute",
+    top: -30,
+    left:5,
+    zIndex: 10,
+  },
+  backIcon: {
+    width: 30,
+    height: 30,
+  },
+  title: {
+    fontFamily: 'Roboto-Regular',
+    fontSize: 32,
+    color: 'white',
+    marginTop: 10,
+    marginLeft: 20,
+  },
+  genresContainer: {
+    flexDirection: 'row',
+    marginLeft: 20,
+    marginRight: 20,
+    marginTop: 20,
+  },
+  genre: {
+    backgroundColor: '#27272A',
+    padding: 10,
+    borderRadius: 4,
+  },
+  genreMargin: {
+    marginLeft: 10,
+  },
+  genreText: {
+    color: 'white',
+    fontFamily: 'Inter-Regular',
+    fontSize: 12,
+    lineHeight: 24,
+  },
+  overview: {
+    marginTop: 20,
+    marginLeft: 20,
+    color: 'white',
+    fontFamily: 'Poppins-Regular',
+    fontSize: 14,
+    lineHeight: 24,
+  },
+  similarText: {
+    marginLeft: 20,
+    marginTop: 30,
+    color: 'white',
+    fontSize: 20,
+    lineHeight: 32,
+    fontFamily: 'Roboto-Regular',
+  },
+  similarList: {
+    marginLeft: 20,
+    marginTop: 20,
+    marginBottom: 50,
+  },
+});
 
 export default Details;
