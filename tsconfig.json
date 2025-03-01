@@ -6,12 +6,16 @@
       "@/*": [
         "./*"
       ]
-    }
+    },
+    "jsx": "react-native",
+    "types": ["react-native-svg"]
+    
   },
   "include": [
     "**/*.ts",
     "**/*.tsx",
     ".expo/types/**/*.ts",
     "expo-env.d.ts"
-  ]
+, "app/onboard/index.jsx", "app/auth/login.jsx", "app/auth/register.jsx"  ]
+  
 }

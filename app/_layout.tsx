@@ -30,9 +30,9 @@ export default function RootLayout() {
   }
 
   return (
-    <SafeAreaProvider>
-      <SafeAreaView style={styles.container}>
-        <ThemeProvider value={colorScheme === 'light' ? DarkTheme : DefaultTheme}>
+    <SafeAreaProvider style={{backgroundColor:'black'}}>
+      <SafeAreaView style={styles.container}   >
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
           <Stack>
             <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
             <Stack.Screen name="+not-found" />
@@ -47,6 +47,6 @@ export default function RootLayout() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    backgroundColor: '#fff', // Arxa fon rəngi (istəyə görə dəyiş)
+    backgroundColor: 'black', // Arxa fon rəngi (istəyə görə dəyiş)
   },
 });
