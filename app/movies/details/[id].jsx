@@ -5,10 +5,15 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import YoutubePlayer from "react-native-youtube-iframe";
 import Similar from "../../../components/movies/similars/Similar";
 import { StyleSheet } from "react-native"; // Stil üçün StyleSheet import edin
+import TVShows from '../../../components/movies/shows/TvShows';
+
+import TrendingMovies from "../../../components/movies/trending/TrendingMovies";
 
 const Details = () => {
   const [data, setData] = useState({});
   const [similar, setSimilar] = useState([]);
+  const [trendingTVShows, setTrendingTVShows] = useState([]);
+
   const [genres, setGenres] = useState([]);
   const [trailerKey, setTrailerKey] = useState("");
   const { id, mediaType, start } = useLocalSearchParams();
@@ -49,21 +54,33 @@ const Details = () => {
   };
 
   const getSimilar = async () => {
+  try {
+    const token = await AsyncStorage.getItem("token");
+    const response = await fetch(
+      `http://192.168.0.111:5001/api/v1/movie/${id}/similar`,
+      {
+        method: "GET",
+        headers: {
+          Authorization: `Bearer ${token}`,
+        },
+      }
+    );
+    const apiData = await response.json();
+    console.log("Similar data:", apiData); // Burada yoxlayırıq
+    setSimilar(apiData.similar);
+  } catch (error) {
+    console.error("Error fetching similar:", error);
+  }
+};
+const getTrendingTVShows = async () => {
     try {
-      const token = await AsyncStorage.getItem("token");
-      const response = await fetch(
-        `http://192.168.0.111:5001/api/v1/${mediaType}/${id}/similar`,
-        {
-          method: "GET",
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
-        }
-      );
-      const apiData = await response.json();
-      setSimilar(apiData.similar);
+      const response = await fetch("http://192.168.0.111:5001/api/v1/tv/trending");
+      if (response.ok) {
+        const datas = await response.json();
+        setTrendingTVShows(datas.content);
+      }
     } catch (error) {
-      console.error(error);
+      console.error("Error fetching trending TV shows:", error);
     }
   };
 
@@ -86,6 +103,7 @@ const Details = () => {
     getData();
     getTrailer();
     getSimilar();
+ getTrendingTVShows();
   }, []);
 
   return (
@@ -116,8 +134,16 @@ const Details = () => {
         {data.overview}
       </Text>
 
-      <Text style={styles.similarText}>Similar TV Shows</Text>
+<Text style={styles.similarText}>Similar TV Shows</Text>
 
+
+  <FlatList
+        data={trendingTVShows}
+        horizontal
+        showsHorizontalScrollIndicator={false}
+        contentContainerStyle={styles.listContainer}
+        renderItem={({ item }) => <TVShows item={item} />}
+      />
     
     </ScrollView>
   );
@@ -128,7 +154,7 @@ const styles = StyleSheet.create({
     backgroundColor: 'black',
     height: '100%',
     width: '100%',
-    paddingTop: 40,
+    paddingTop: 40, 
   },
   backButton: {
     position: "absolute",
@@ -175,14 +201,16 @@ const styles = StyleSheet.create({
     fontSize: 14,
     lineHeight: 24,
   },
-  similarText: {
-    marginLeft: 20,
-    marginTop: 30,
-    color: 'white',
-    fontSize: 20,
-    lineHeight: 32,
-    fontFamily: 'Roboto-Regular',
-  },
+similarText: {
+  marginLeft: 20,
+  marginTop: 30,
+  fontSize: 20,
+  lineHeight: 32,
+  fontFamily: 'Roboto-Regular',
+  fontWeight: '400', // font-normal
+  color: '#FFFFFF',
+},
+
   similarList: {
     marginLeft: 20,
     marginTop: 20,
